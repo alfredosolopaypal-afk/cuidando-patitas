@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuidando patitas — Adopción de mascotas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FBF7F1;
+    --surface: #FFFFFF;
+    --text: #2B241E;
+    --text-soft: #7A6C5D;
+    --primary: #2A6F6F;
+    --primary-dark: #1E5252;
+    --primary-soft: #E4F0EF;
+    --accent: #E8A33D;
+    --accent-dark: #C97F1E;
+    --accent-soft: #FCEEDA;
+    --border: #E6DDD0;
+    --danger: #B44B3F;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 1.5;
+  }
+
+  h1,h2,h3, .brand-name, .btn-grande{
+    font-family: 'Baloo 2', 'Inter', sans-serif;
+  }
+
+  img{ max-width:100%; }
+
+  .contenedor{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .site-header{
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .site-header .contenedor{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .logo-marca{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink: 0;
+  }
+
+  .logo-marca svg{ width: 28px; height: 28px; }
+
+  .marca-textos{ display:flex; flex-direction:column; }
+
+  .brand-name{
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    line-height: 1.1;
+  }
+
+  .brand-tagline{
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+
+  /* ---------- LAYOUT DE VISTAS ---------- */
+  main{ padding: 48px 0 80px; min-height: 60vh; }
+  .vista.oculta{ display:none; }
+
+  /* ---------- HERO / INICIO ---------- */
+  .hero{
+    text-align:center;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 0 8px;
+  }
+
+  .hero-icono-paw{
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    opacity: 0.9;
+  }
+
+  .hero h1{
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin: 0 0 16px;
+  }
+
+  .hero p{
+    font-size: 17px;
+    color: var(--text-soft);
+    margin: 0 0 36px;
+  }
+
+  .botones-hero{
+    display:flex;
+    gap: 16px;
+    justify-content:center;
+    flex-wrap: wrap;
+  }
+
+  .btn-grande{
+    font-size: 17px;
+    font-weight: 600;
+    padding: 18px 32px;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    min-width: 220px;
+  }
+
+  .btn-grande:hover{ transform: translateY(-2px); }
+
+  .btn-primario{
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(42,111,111,0.25);
+  }
+  .btn-primario:hover{ background: var(--primary-dark); }
+
+  .btn-secundario{
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    border: 1.5px solid var(--accent);
+  }
+  .btn-secundario:hover{ background: var(--accent); color:#fff; }
+
+  /* ---------- BOTÓN VOLVER ---------- */
+  .btn-volver{
+    background:none;
+    border:none;
+    color: var(--text-soft);
+    font-size: 15px;
+    font-weight: 600;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom: 20px;
+    padding: 6px 0;
+  }
+  .btn-volver:hover{ color: var(--primary-dark); }
+
+  /* ---------- TARJETA / PANEL ---------- */
+  .panel{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .panel h2{
+    font-size: 26px;
+    color: var(--primary-dark);
+    margin: 0 0 6px;
+  }
+
+  .panel .subt{
+    color: var(--text-soft);
+    font-size: 15px;
+    margin: 0 0 28px;
+  }
+
+  .seccion-form{ margin-bottom: 28px; }
+
+  .seccion-form h3{
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .fila{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .fila.una-col{ grid-template-columns: 1fr; }
+
+  @media (max-width: 560px){
+    .fila{ grid-template-columns: 1fr; }
+  }
+
+  label{
+    display:block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  label .opcional{
+    font-weight: 400;
+    color: var(--text-soft);
+    font-size: 12.5px;
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea{
+    width:100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  input:focus, select:focus, textarea:focus{
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .grupo-edad{ display:flex; gap: 10px; }
+  .grupo-edad input{ flex: 1; }
+  .grupo-edad select{ flex: 1; }
+
+  /* ---------- PASTILLAS (pill selector) ---------- */
+  .pastillas{ display:flex; gap:10px; flex-wrap:wrap; }
+
+  .pastilla{
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor:pointer;
+    transition: all .12s ease;
+  }
+
+  .pastilla:hover{ border-color: var(--primary); }
+
+  .pastilla.activa{
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+
+  .campo-condicional{
+    margin-top: 12px;
+    display:none;
+  }
+  .campo-condicional.visible{ display:block; }
+
+  /* ---------- FOTO ---------- */
+  .subir-foto{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+
+  .preview-foto{
+    width: 84px;
+    height: 84px;
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    border: 1.5px dashed var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+    color: var(--text-soft);
+    font-size: 11px;
+    text-align:center;
+  }
+
+  .preview-foto img{ width:100%; height:100%; object-fit:cover; }
+
+  .btn-elegir-foto{
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+  }
+  .btn-elegir-foto:hover{ border-color: var(--primary); }
+
+  /* ---------- BOTONES DE FORM ---------- */
+  .btn-enviar{
+    width:100%;
+    background: var(--primary);
+    color:#fff;
+    border:none;
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 700;
+    cursor:pointer;
+    margin-top: 8px;
+  }
+  .btn-enviar:hover{ background: var(--primary-dark); }
+  .btn-enviar:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  .mensaje-error{
+    color: var(--danger);
+    font-size: 13.5px;
+    margin-top: 6px;
+    display:none;
+  }
+  .mensaje-error.visible{ display:block; }
+
+  .confirmacion{
+    text-align:center;
+    padding: 20px 0;
+  }
+  .confirmacion .icono-check{
+    width: 56px; height:56px;
+    border-radius:50%;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+
+  /* ---------- LISTADO ---------- */
+  .encabezado-listado{
+    text-align:center;
+    max-width: 560px;
+    margin: 0 auto 32px;
+  }
+  .encabezado-listado h2{
+    font-size: 30px;
+    color: var(--primary-dark);
+    margin: 0 0 8px;
+  }
+  .encabezado-listado p{ color: var(--text-soft); margin:0; }
+
+  .barra-filtros{
+    display:flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content:center;
+    margin-bottom: 32px;
+  }
+
+  .barra-filtros input[type="text"]{
+    max-width: 220px;
+  }
+
+  .grid-mascotas{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .tarjeta-mascota{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .foto-tarjeta{
+    width:100%;
+    aspect-ratio: 4/3;
+    background: var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--text-soft);
+    overflow:hidden;
+  }
+  .foto-tarjeta img{ width:100%; height:100%; object-fit:cover; }
+
+  .info-tarjeta{ padding: 16px; flex:1; display:flex; flex-direction:column; }
+
+  .info-tarjeta .nombre-y-tipo{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom: 4px;
+  }
+
+  .info-tarjeta h3{
+    font-size: 17px;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .etiqueta-tipo{
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    white-space:nowrap;
+  }
+
+  .detalle-tarjeta{
+    font-size: 13.5px;
+    color: var(--text-soft);
+    margin: 2px 0 12px;
+  }
+
+  .btn-contactar{
+    margin-top:auto;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    border:none;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor:pointer;
+  }
+  .btn-contactar:hover{ background: var(--primary); color:#fff; }
+
+  .datos-contacto{
+    margin-top: 10px;
+    font-size: 13px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display:none;
+  }
+  .datos-contacto.visible{ display:block; }
+  .datos-contacto div{ margin-bottom:2px; }
+
+  .estado-vacio, .estado-cargando{
+    text-align:center;
+    color: var(--text-soft);
+    padding: 60px 20px;
+    grid-column: 1 / -1;
+  }
+
+  footer{
+    text-align:center;
+    color: var(--text-soft);
+    font-size: 13px;
+    padding: 24px 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="contenedor">
+    <div class="logo-marca">
+      <!-- Reemplaza este SVG por tu logo cuando lo tengas -->
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="var(--primary)">
+        <ellipse cx="50" cy="68" rx="24" ry="20"/>
+        <ellipse cx="20" cy="42" rx="11" ry="14"/>
+        <ellipse cx="43" cy="22" rx="10" ry="13"/>
+        <ellipse cx="67" cy="22" rx="10" ry="13"/>
+        <ellipse cx="84" cy="46" rx="10" ry="13"/>
+      </svg>
+    </div>
+    <div class="marca-textos">
+      <span class="brand-name">Cuidando patitas</span>
+      <span class="brand-tagline">Adopción responsable de mascotas</span>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  <!-- ================= INICIO ================= -->
+  <section id="vista-inicio" class="vista">
+    <div class="hero">
+      <svg class="hero-icono-paw" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="var(--accent)">
+        <ellipse cx="50" cy="68" rx="24" ry="20"/>
+        <ellipse cx="20" cy="42" rx="11" ry="14"/>
+        <ellipse cx="43" cy="22" rx="10" ry="13"/>
+        <ellipse cx="67" cy="22" rx="10" ry="13"/>
+        <ellipse cx="84" cy="46" rx="10" ry="13"/>
+      </svg>
+      <h1>Un hogar para cada pata</h1>
+      <p>Conectamos a quienes buscan una mascota con quienes tienen una lista para dar en adopción.</p>
+      <div class="botones-hero">
+        <button class="btn-grande btn-primario" onclick="mostrarVista('listado')">Quiero adoptar</button>
+        <button class="btn-grande btn-secundario" onclick="mostrarVista('formulario')">Quiero dar en adopción</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FORMULARIO ================= -->
+  <section id="vista-formulario" class="vista oculta">
+    <button class="btn-volver" onclick="mostrarVista('inicio')">&larr; Volver al inicio</button>
+
+    <div class="panel">
+      <div id="form-contenido">
+        <h2>Cuéntanos sobre tu mascota</h2>
+        <p class="subt">Completa estos datos para publicarla y que alguien pueda adoptarla.</p>
+
+        <form id="form-mascota">
+
+          <div class="seccion-form">
+            <h3>Tus datos</h3>
+            <div class="fila">
+              <div>
+                <label for="nombres_dueno">Nombres</label>
+                <input type="text" id="nombres_dueno" required>
+              </div>
+              <div>
+                <label for="apellidos_dueno">Apellidos</label>
+                <input type="text" id="apellidos_dueno" required>
+              </div>
+            </div>
+            <div class="fila">
+              <div>
+                <label for="direccion">Dirección</label>
+                <input type="text" id="direccion" required>
+              </div>
+              <div>
+                <label for="telefono">Número de teléfono</label>
+                <input type="tel" id="telefono" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="seccion-form">
+            <h3>Tipo de animal</h3>
+            <div class="pastillas" id="pastillas-tipo">
+              <button type="button" class="pastilla" data-valor="Perro">Perro</button>
+              <button type="button" class="pastilla" data-valor="Gato">Gato</button>
+              <button type="button" class="pastilla" data-valor="Otro">Otro</button>
+            </div>
+            <div class="campo-condicional" id="campo-tipo-otro">
+              <label for="tipo_otro">¿Qué tipo de animal es?</label>
+              <input type="text" id="tipo_otro" placeholder="Ej. Conejo, ave, tortuga...">
+            </div>
+            <div class="mensaje-error" id="error-tipo">Selecciona el tipo de animal.</div>
+          </div>
+
+          <div class="seccion-form">
+            <h3>Datos de la mascota</h3>
+            <div class="fila">
+              <div>
+                <label for="nombre_mascota">Nombre <span class="opcional">(opcional)</span></label>
+                <input type="text" id="nombre_mascota">
+              </div>
+              <div>
+                <label for="raza">Raza</label>
+                <input type="text" id="raza" placeholder="Ej. Criollo, Labrador..." required>
+              </div>
+            </div>
+
+            <div class="fila">
+              <div>
+                <label for="edad_valor">Edad</label>
+                <div class="grupo-edad">
+                  <input type="number" id="edad_valor" min="0" required>
+                  <select id="edad_unidad">
+                    <option value="Meses">Meses</option>
+                    <option value="Años">Años</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label>Tamaño</label>
+                <div class="pastillas" id="pastillas-tamano">
+                  <button type="button" class="pastilla" data-valor="Pequeño">Pequeño</button>
+                  <button type="button" class="pastilla" data-valor="Mediano">Mediano</button>
+                  <button type="button" class="pastilla" data-valor="Grande">Grande</button>
+                </div>
+                <div class="mensaje-error" id="error-tamano">Selecciona un tamaño.</div>
+              </div>
+            </div>
+
+            <div class="fila">
+              <div>
+                <label>Sexo</label>
+                <div class="pastillas" id="pastillas-sexo">
+                  <button type="button" class="pastilla" data-valor="Macho">Macho</button>
+                  <button type="button" class="pastilla" data-valor="Hembra">Hembra</button>
+                </div>
+                <div class="mensaje-error" id="error-sexo">Selecciona el sexo.</div>
+              </div>
+              <div>
+                <label>¿Está esterilizado/a?</label>
+                <div class="pastillas" id="pastillas-esterilizado">
+                  <button type="button" class="pastilla" data-valor="si">Sí</button>
+                  <button type="button" class="pastilla" data-valor="no">No</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="fila una-col">
+              <div>
+                <label>Foto de la mascota</label>
+                <div class="subir-foto">
+                  <div class="preview-foto" id="preview-foto">Sin foto</div>
+                  <button type="button" class="btn-elegir-foto" onclick="document.getElementById('input-foto').click()">Elegir foto</button>
+                  <input type="file" id="input-foto" accept="image/*" style="display:none">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mensaje-error" id="error-general"></div>
+          <button type="submit" class="btn-enviar" id="btn-enviar">Publicar mascota</button>
+        </form>
+      </div>
+
+      <div id="form-confirmacion" class="confirmacion" style="display:none">
+        <div class="icono-check">✓</div>
+        <h2>¡Listo!</h2>
+        <p class="subt">Tu mascota ya está publicada y las personas interesadas podrán verla en "Quiero adoptar".</p>
+        <button class="btn-grande btn-primario" onclick="mostrarVista('inicio')">Volver al inicio</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LISTADO ================= -->
+  <section id="vista-listado" class="vista oculta">
+    <button class="btn-volver" onclick="mostrarVista('inicio')">&larr; Volver al inicio</button>
+
+    <div class="encabezado-listado">
+      <h2>Mascotas esperando un hogar</h2>
+      <p>Filtra por tipo, tamaño o raza para encontrar a tu compañero ideal.</p>
+    </div>
+
+    <div class="barra-filtros">
+      <div class="pastillas" id="pastillas-filtro-tipo">
+        <button type="button" class="pastilla activa" data-valor="">Todos</button>
+        <button type="button" class="pastilla" data-valor="Perro">Perro</button>
+        <button type="button" class="pastilla" data-valor="Gato">Gato</button>
+        <button type="button" class="pastilla" data-valor="Otro">Otro</button>
+      </div>
+      <input type="text" id="filtro-raza" placeholder="Buscar por raza...">
+      <select id="filtro-tamano">
+        <option value="">Cualquier tamaño</option>
+        <option value="Pequeño">Pequeño</option>
+        <option value="Mediano">Mediano</option>
+        <option value="Grande">Grande</option>
+      </select>
+    </div>
+
+    <div class="grid-mascotas" id="grid-mascotas">
+      <div class="estado-cargando">Cargando mascotas...</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Cuidando patitas · Hecho con cariño para quienes buscan y ofrecen un hogar</footer>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  // ============================================
+  // ⚠️ REEMPLAZA ESTOS DOS VALORES con los de tu proyecto de Supabase
+  // (Project Settings → API en tu dashboard de Supabase)
+  // ============================================
+  const SUPABASE_URL = 'TU_SUPABASE_URL_AQUI';
+  const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY_AQUI';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ---------- Navegación entre vistas ----------
+  window.mostrarVista = function(nombre){
+    document.querySelectorAll('.vista').forEach(v => v.classList.add('oculta'));
+    document.getElementById('vista-' + nombre).classList.remove('oculta');
+    window.scrollTo({top:0, behavior:'smooth'});
+    if(nombre === 'listado'){ cargarMascotas(); }
+    if(nombre === 'formulario'){ reiniciarFormulario(); }
+  };
+
+  // ---------- Selector de pastillas (genérico) ----------
+  function configurarPastillas(contenedorId, alSeleccionar){
+    const contenedor = document.getElementById(contenedorId);
+    contenedor.querySelectorAll('.pastilla').forEach(btn => {
+      btn.addEventListener('click', () => {
+        contenedor.querySelectorAll('.pastilla').forEach(b => b.classList.remove('activa'));
+        btn.classList.add('activa');
+        if(alSeleccionar) alSeleccionar(btn.dataset.valor);
+      });
+    });
+  }
+
+  let tipoSeleccionado = null, tamanoSeleccionado = null, sexoSeleccionado = null, esterilizadoSeleccionado = null;
+
+  configurarPastillas('pastillas-tipo', (valor) => {
+    tipoSeleccionado = valor;
+    document.getElementById('campo-tipo-otro').classList.toggle('visible', valor === 'Otro');
+    document.getElementById('error-tipo').classList.remove('visible');
+  });
+  configurarPastillas('pastillas-tamano', (valor) => {
+    tamanoSeleccionado = valor;
+    document.getElementById('error-tamano').classList.remove('visible');
+  });
+  configurarPastillas('pastillas-sexo', (valor) => {
+    sexoSeleccionado = valor;
+    document.getElementById('error-sexo').classList.remove('visible');
+  });
+  configurarPastillas('pastillas-esterilizado', (valor) => { esterilizadoSeleccionado = valor; });
+
+  // Filtro de tipo en el listado (permite deseleccionar visualmente distinto: siempre hay uno activo)
+  let filtroTipoActivo = '';
+  configurarPastillas('pastillas-filtro-tipo', (valor) => { filtroTipoActivo = valor; cargarMascotas(); });
+
+  // ---------- Foto ----------
+  let archivoFoto = null;
+  document.getElementById('input-foto').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    archivoFoto = file;
+    const preview = document.getElementById('preview-foto');
+    const lector = new FileReader();
+    lector.onload = (ev) => { preview.innerHTML = `<img src="${ev.target.result}" alt="Vista previa">`; };
+    lector.readAsDataURL(file);
+  });
+
+  function reiniciarFormulario(){
+    document.getElementById('form-mascota').style.display = '';
+    document.getElementById('form-contenido').style.display = '';
+    document.getElementById('form-confirmacion').style.display = 'none';
+  }
+
+  // ---------- Envío del formulario ----------
+  document.getElementById('form-mascota').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorGeneral = document.getElementById('error-general');
+    errorGeneral.classList.remove('visible');
+    errorGeneral.textContent = '';
+
+    // Validaciones de las pastillas obligatorias
+    let valido = true;
+    if(!tipoSeleccionado){ document.getElementById('error-tipo').classList.add('visible'); valido = false; }
+    if(!tamanoSeleccionado){ document.getElementById('error-tamano').classList.add('visible'); valido = false; }
+    if(!sexoSeleccionado){ document.getElementById('error-sexo').classList.add('visible'); valido = false; }
+    if(!valido) return;
+
+    const btnEnviar = document.getElementById('btn-enviar');
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Publicando...';
+
+    try{
+      let fotoUrl = null;
+
+      if(archivoFoto){
+        const rutaArchivo = `${Date.now()}_${archivoFoto.name.replace(/\s+/g,'_')}`;
+        const { error: errorSubida } = await supabase.storage
+          .from('fotos-mascotas')
+          .upload(rutaArchivo, archivoFoto);
+
+        if(errorSubida) throw new Error('No se pudo subir la foto: ' + errorSubida.message);
+
+        const { data: urlPublica } = supabase.storage
+          .from('fotos-mascotas')
+          .getPublicUrl(rutaArchivo);
+        fotoUrl = urlPublica.publicUrl;
+      }
+
+      const registro = {
+        nombres_dueno: document.getElementById('nombres_dueno').value.trim(),
+        apellidos_dueno: document.getElementById('apellidos_dueno').value.trim(),
+        direccion: document.getElementById('direccion').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        tipo_animal: tipoSeleccionado,
+        tipo_otro: tipoSeleccionado === 'Otro' ? document.getElementById('tipo_otro').value.trim() : null,
+        nombre_mascota: document.getElementById('nombre_mascota').value.trim() || null,
+        raza: document.getElementById('raza').value.trim(),
+        edad_valor: parseInt(document.getElementById('edad_valor').value, 10),
+        edad_unidad: document.getElementById('edad_unidad').value,
+        sexo: sexoSeleccionado,
+        esterilizado: esterilizadoSeleccionado === 'si',
+        tamano: tamanoSeleccionado,
+        foto_url: fotoUrl
+      };
+
+      const { error: errorInsert } = await supabase.from('mascotas').insert(registro);
+      if(errorInsert) throw new Error(errorInsert.message);
+
+      document.getElementById('form-contenido').style.display = 'none';
+      document.getElementById('form-confirmacion').style.display = 'block';
+
+    }catch(err){
+      errorGeneral.textContent = 'Ocurrió un error: ' + err.message;
+      errorGeneral.classList.add('visible');
+    }finally{
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Publicar mascota';
+    }
+  });
+
+  // ---------- Listado / búsqueda ----------
+  document.getElementById('filtro-raza').addEventListener('input', debounce(cargarMascotas, 350));
+  document.getElementById('filtro-tamano').addEventListener('change', cargarMascotas);
+
+  function debounce(fn, espera){
+    let temporizador;
+    return (...args) => {
+      clearTimeout(temporizador);
+      temporizador = setTimeout(() => fn(...args), espera);
+    };
+  }
+
+  async function cargarMascotas(){
+    const grid = document.getElementById('grid-mascotas');
+    grid.innerHTML = '<div class="estado-cargando">Cargando mascotas...</div>';
+
+    let consulta = supabase.from('mascotas').select('*').eq('estado', 'Disponible').order('creado_en', { ascending: false });
+
+    if(filtroTipoActivo){ consulta = consulta.eq('tipo_animal', filtroTipoActivo); }
+
+    const raza = document.getElementById('filtro-raza').value.trim();
+    if(raza){ consulta = consulta.ilike('raza', `%${raza}%`); }
+
+    const tamano = document.getElementById('filtro-tamano').value;
+    if(tamano){ consulta = consulta.eq('tamano', tamano); }
+
+    const { data, error } = await consulta;
+
+    if(error){
+      grid.innerHTML = `<div class="estado-vacio">No se pudo cargar el listado: ${error.message}</div>`;
+      return;
+    }
+
+    if(!data || data.length === 0){
+      grid.innerHTML = '<div class="estado-vacio">No hay mascotas que coincidan con tu búsqueda todavía.</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    data.forEach(m => grid.appendChild(crearTarjeta(m)));
+  }
+
+  function crearTarjeta(m){
+    const tarjeta = document.createElement('div');
+    tarjeta.className = 'tarjeta-mascota';
+
+    const tipoMostrado = m.tipo_animal === 'Otro' ? (m.tipo_otro || 'Otro') : m.tipo_animal;
+    const edadTexto = `${m.edad_valor} ${m.edad_unidad.toLowerCase()}`;
+    const nombreMostrado = m.nombre_mascota || 'Sin nombre';
+
+    tarjeta.innerHTML = `
+      <div class="foto-tarjeta">
+        ${m.foto_url ? `<img src="${m.foto_url}" alt="${nombreMostrado}">` : 'Sin foto'}
+      </div>
+      <div class="info-tarjeta">
+        <div class="nombre-y-tipo">
+          <h3>${escaparHtml(nombreMostrado)}</h3>
+          <span class="etiqueta-tipo">${escaparHtml(tipoMostrado)}</span>
+        </div>
+        <div class="detalle-tarjeta">
+          ${escaparHtml(m.raza)} · ${edadTexto} · ${m.sexo}${m.esterilizado ? ' · Esterilizado' : ''}<br>
+          Tamaño: ${m.tamano}
+        </div>
+        <button type="button" class="btn-contactar">Quiero contactar</button>
+        <div class="datos-contacto">
+          <div><strong>${escaparHtml(m.nombres_dueno)} ${escaparHtml(m.apellidos_dueno)}</strong></div>
+          <div>Tel: ${escaparHtml(m.telefono)}</div>
+          <div>${escaparHtml(m.direccion)}</div>
+        </div>
+      </div>
+    `;
+
+    const btnContactar = tarjeta.querySelector('.btn-contactar');
+    const datosContacto = tarjeta.querySelector('.datos-contacto');
+    btnContactar.addEventListener('click', () => {
+      datosContacto.classList.toggle('visible');
+      btnContactar.textContent = datosContacto.classList.contains('visible') ? 'Ocultar contacto' : 'Quiero contactar';
+    });
+
+    return tarjeta;
+  }
+
+  function escaparHtml(texto){
+    const div = document.createElement('div');
+    div.textContent = texto ?? '';
+    return div.innerHTML;
+  }
+</script>
+
+</body>
+</html>
