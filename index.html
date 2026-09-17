@@ -39,6 +39,19 @@
   .brand-name{ font-size: 21px; font-weight: 700; color: var(--primary-dark); line-height: 1.1; }
   .brand-tagline{ font-size: 13px; color: var(--text-soft); }
 
+  .enlace-admin{
+    margin-left: auto;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    transition: all .12s ease;
+  }
+  .enlace-admin:hover{ border-color: var(--primary); color: var(--primary-dark); }
+
   main{ padding: 48px 0 80px; min-height: 60vh; }
   .vista.oculta{ display:none; }
 
@@ -171,6 +184,7 @@
       <span class="brand-name">Cuidando patitas</span>
       <span class="brand-tagline">Adopción responsable de mascotas</span>
     </div>
+    <a class="enlace-admin" href="admin.html">Admin</a>
   </div>
 </header>
 
