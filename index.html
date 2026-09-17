@@ -282,6 +282,22 @@
                 </div>
               </div>
             </div>
+            <div class="fila">
+              <div>
+                <label>¿Está desparasitado/a?</label>
+                <div class="pastillas" id="pastillas-desparasitado">
+                  <button type="button" class="pastilla" data-valor="si">Sí</button>
+                  <button type="button" class="pastilla" data-valor="no">No</button>
+                </div>
+              </div>
+              <div>
+                <label>¿Está vacunado/a?</label>
+                <div class="pastillas" id="pastillas-vacunado">
+                  <button type="button" class="pastilla" data-valor="si">Sí</button>
+                  <button type="button" class="pastilla" data-valor="no">No</button>
+                </div>
+              </div>
+            </div>
             <div class="fila una-col">
               <div>
                 <label>Foto de la mascota</label>
@@ -378,7 +394,7 @@
     });
   }
 
-  let tipoSeleccionado = null, tamanoSeleccionado = null, sexoSeleccionado = null, esterilizadoSeleccionado = null;
+  let tipoSeleccionado = null, tamanoSeleccionado = null, sexoSeleccionado = null, esterilizadoSeleccionado = null, desparasitadoSeleccionado = null, vacunadoSeleccionado = null;
 
   configurarPastillas('pastillas-tipo', (valor) => {
     tipoSeleccionado = valor;
@@ -394,6 +410,8 @@
     document.getElementById('error-sexo').classList.remove('visible');
   });
   configurarPastillas('pastillas-esterilizado', (valor) => { esterilizadoSeleccionado = valor; });
+  configurarPastillas('pastillas-desparasitado', (valor) => { desparasitadoSeleccionado = valor; });
+  configurarPastillas('pastillas-vacunado', (valor) => { vacunadoSeleccionado = valor; });
 
   let filtroTipoActivo = '';
   configurarPastillas('pastillas-filtro-tipo', (valor) => { filtroTipoActivo = valor; cargarMascotas(); });
@@ -454,6 +472,8 @@
         edad_unidad: document.getElementById('edad_unidad').value,
         sexo: sexoSeleccionado,
         esterilizado: esterilizadoSeleccionado === 'si',
+        desparasitado: desparasitadoSeleccionado === 'si',
+        vacunado: vacunadoSeleccionado === 'si',
         tamano: tamanoSeleccionado,
         foto_url: fotoUrl,
         estado: 'Pendiente'
@@ -523,7 +543,7 @@
           <span class="etiqueta-tipo">${escaparHtml(tipoMostrado)}</span>
         </div>
         <div class="detalle-tarjeta">
-          ${escaparHtml(m.raza)} · ${escaparHtml(edadTexto)} · ${escaparHtml(m.sexo)}${m.esterilizado ? ' · Esterilizado' : ''}<br>
+          ${escaparHtml(m.raza)} · ${escaparHtml(edadTexto)} · ${escaparHtml(m.sexo)}${m.esterilizado ? ' · Esterilizado' : ''}${m.vacunado ? ' · Vacunado' : ''}${m.desparasitado ? ' · Desparasitado' : ''}<br>
           Tamaño: ${escaparHtml(m.tamano)}
         </div>
         <div class="fila-botones-tarjeta">
