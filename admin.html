@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de administrador — Cuidando patitas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FBF7F1; --surface: #FFFFFF; --text: #2B241E; --text-soft: #7A6C5D;
+    --primary: #2A6F6F; --primary-dark: #1E5252; --primary-soft: #E4F0EF;
+    --accent: #E8A33D; --accent-dark: #C97F1E; --accent-soft: #FCEEDA;
+    --border: #E6DDD0; --danger: #B44B3F; --danger-soft: #F7E3E0;
+    --radius-sm: 10px; --radius-md: 16px; --radius-lg: 24px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; }
+  h1,h2,h3{ font-family:'Baloo 2','Inter',sans-serif; }
+  .contenedor{ max-width: 960px; margin:0 auto; padding: 0 24px; }
+
+  header{ background:var(--surface); border-bottom:1px solid var(--border); }
+  header .contenedor{ display:flex; align-items:center; justify-content:space-between; padding: 18px 24px; }
+  header h1{ font-size:20px; color:var(--primary-dark); margin:0; }
+  .btn-salir{ background:none; border:1.5px solid var(--border); padding:8px 14px; border-radius:var(--radius-sm); font-size:13.5px; font-weight:600; cursor:pointer; color:var(--text-soft); }
+  .btn-salir:hover{ border-color: var(--danger); color: var(--danger); }
+
+  main{ padding: 40px 0 80px; }
+
+  /* ---------- LOGIN ---------- */
+  .panel-login{ max-width: 380px; margin: 60px auto 0; background:var(--surface); border:1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; }
+  .panel-login h2{ font-size:22px; color:var(--primary-dark); margin:0 0 6px; }
+  .panel-login p{ color:var(--text-soft); font-size:14px; margin:0 0 24px; }
+  label{ display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
+  input[type="email"], input[type="password"]{
+    width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:15px; margin-bottom:16px; font-family:inherit;
+  }
+  input:focus{ outline:none; border-color:var(--primary); }
+  .btn-primario{ width:100%; background:var(--primary); color:#fff; border:none; padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:15px; cursor:pointer; }
+  .btn-primario:hover{ background:var(--primary-dark); }
+  .mensaje-error{ color:var(--danger); font-size:13.5px; margin-top:-6px; margin-bottom:14px; display:none; }
+  .mensaje-error.visible{ display:block; }
+
+  /* ---------- DASHBOARD ---------- */
+  .oculto{ display:none; }
+  .seccion-admin{ margin-bottom: 44px; }
+  .seccion-admin h2{ font-size:20px; color:var(--primary-dark); margin:0 0 4px; display:flex; align-items:center; gap:8px; }
+  .contador{ background:var(--accent); color:#fff; font-size:12px; font-weight:700; border-radius:999px; padding:2px 9px; }
+  .seccion-admin > p{ color:var(--text-soft); font-size:13.5px; margin:0 0 18px; }
+
+  .lista-admin{ display:flex; flex-direction:column; gap:12px; }
+
+  .fila-mascota{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:16px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+  }
+  .foto-mini{ width:64px; height:64px; border-radius:var(--radius-sm); object-fit:cover; background:var(--bg); flex-shrink:0; }
+  .foto-mini.vacia{ display:flex; align-items:center; justify-content:center; color:var(--text-soft); font-size:10px; text-align:center; }
+  .info-fila{ flex:1; min-width:200px; }
+  .info-fila strong{ font-size:15px; }
+  .info-fila .detalle{ font-size:13px; color:var(--text-soft); margin-top:2px; }
+  .info-fila .dueno{ font-size:12.5px; color:var(--text-soft); margin-top:4px; }
+
+  .acciones-fila{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-accion{ border:none; padding:9px 16px; border-radius:var(--radius-sm); font-size:13.5px; font-weight:700; cursor:pointer; }
+  .btn-aprobar{ background:var(--primary-soft); color:var(--primary-dark); }
+  .btn-aprobar:hover{ background:var(--primary); color:#fff; }
+  .btn-adoptado{ background:var(--accent-soft); color:var(--accent-dark); }
+  .btn-adoptado:hover{ background:var(--accent); color:#fff; }
+  .btn-eliminar{ background:var(--danger-soft); color:var(--danger); }
+  .btn-eliminar:hover{ background:var(--danger); color:#fff; }
+
+  .estado-vacio{ color:var(--text-soft); font-size:14px; padding: 20px; text-align:center; background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius-md); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenedor">
+    <h1>🐾 Cuidando patitas — Admin</h1>
+    <button class="btn-salir oculto" id="btn-salir">Cerrar sesión</button>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  <div class="panel-login" id="panel-login">
+    <h2>Iniciar sesión</h2>
+    <p>Ingresa con tu cuenta de administrador para revisar y gestionar las publicaciones.</p>
+    <form id="form-login">
+      <label for="email">Correo</label>
+      <input type="email" id="email" required>
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" required>
+      <div class="mensaje-error" id="error-login"></div>
+      <button type="submit" class="btn-primario" id="btn-login">Entrar</button>
+    </form>
+  </div>
+
+  <div id="dashboard" class="oculto">
+
+    <section class="seccion-admin">
+      <h2>Pendientes de aprobar <span class="contador" id="contador-pendientes">0</span></h2>
+      <p>Estas publicaciones todavía no son visibles en "Quiero adoptar".</p>
+      <div class="lista-admin" id="lista-pendientes"></div>
+    </section>
+
+    <section class="seccion-admin">
+      <h2>Publicadas <span class="contador" id="contador-publicadas">0</span></h2>
+      <p>Mascotas visibles actualmente para el público.</p>
+      <div class="lista-admin" id="lista-publicadas"></div>
+    </section>
+
+  </div>
+
+</main>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL = 'https://mefkrmqywszjyshkbtzq.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_XJ65KGnpjH49rGueqwW9Ww_sIBFYYjJ';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const panelLogin = document.getElementById('panel-login');
+  const dashboard = document.getElementById('dashboard');
+  const btnSalir = document.getElementById('btn-salir');
+
+  // ---------- Revisar si ya hay sesión iniciada ----------
+  const { data: { session } } = await supabase.auth.getSession();
+  if(session){ mostrarDashboard(); }
+
+  supabase.auth.onAuthStateChange((_evento, sesion) => {
+    if(sesion){ mostrarDashboard(); } else { mostrarLogin(); }
+  });
+
+  function mostrarDashboard(){
+    panelLogin.classList.add('oculto');
+    dashboard.classList.remove('oculto');
+    btnSalir.classList.remove('oculto');
+    cargarTodo();
+  }
+
+  function mostrarLogin(){
+    panelLogin.classList.remove('oculto');
+    dashboard.classList.add('oculto');
+    btnSalir.classList.add('oculto');
+  }
+
+  // ---------- Login ----------
+  document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorLogin = document.getElementById('error-login');
+    errorLogin.classList.remove('visible');
+
+    const btnLogin = document.getElementById('btn-login');
+    btnLogin.disabled = true;
+    btnLogin.textContent = 'Entrando...';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if(error){
+      errorLogin.textContent = 'No se pudo iniciar sesión: ' + error.message;
+      errorLogin.classList.add('visible');
+    }
+
+    btnLogin.disabled = false;
+    btnLogin.textContent = 'Entrar';
+  });
+
+  btnSalir.addEventListener('click', async () => { await supabase.auth.signOut(); });
+
+  // ---------- Cargar datos ----------
+  async function cargarTodo(){
+    await Promise.all([cargarPendientes(), cargarPublicadas()]);
+  }
+
+  async function cargarPendientes(){
+    const contenedor = document.getElementById('lista-pendientes');
+    const { data, error } = await supabase.from('mascotas').select('*').eq('estado', 'Pendiente').order('creado_en', { ascending: true });
+
+    document.getElementById('contador-pendientes').textContent = data ? data.length : 0;
+
+    if(error){ contenedor.innerHTML = `<div class="estado-vacio">Error: ${escaparHtml(error.message)}</div>`; return; }
+    if(!data || data.length === 0){ contenedor.innerHTML = '<div class="estado-vacio">No hay publicaciones pendientes por ahora.</div>'; return; }
+
+    contenedor.innerHTML = '';
+    data.forEach(m => contenedor.appendChild(filaPendiente(m)));
+  }
+
+  async function cargarPublicadas(){
+    const contenedor = document.getElementById('lista-publicadas');
+    const { data, error } = await supabase.from('mascotas').select('*').eq('estado', 'Disponible').order('creado_en', { ascending: false });
+
+    document.getElementById('contador-publicadas').textContent = data ? data.length : 0;
+
+    if(error){ contenedor.innerHTML = `<div class="estado-vacio">Error: ${escaparHtml(error.message)}</div>`; return; }
+    if(!data || data.length === 0){ contenedor.innerHTML = '<div class="estado-vacio">No hay mascotas publicadas todavía.</div>'; return; }
+
+    contenedor.innerHTML = '';
+    data.forEach(m => contenedor.appendChild(filaPublicada(m)));
+  }
+
+  function filaBase(m){
+    const tipoMostrado = m.tipo_animal === 'Otro' ? (m.tipo_otro || 'Otro') : m.tipo_animal;
+    const edadTexto = `${m.edad_valor} ${m.edad_unidad.toLowerCase()}`;
+    const nombreMostrado = m.nombre_mascota || 'Sin nombre';
+
+    const fila = document.createElement('div');
+    fila.className = 'fila-mascota';
+    fila.innerHTML = `
+      ${m.foto_url ? `<img class="foto-mini" src="${escaparHtml(m.foto_url)}" alt="">` : '<div class="foto-mini vacia">Sin foto</div>'}
+      <div class="info-fila">
+        <strong>${escaparHtml(nombreMostrado)}</strong> — ${escaparHtml(tipoMostrado)}, ${escaparHtml(m.raza)}, ${escaparHtml(edadTexto)}, ${escaparHtml(m.sexo)}, ${escaparHtml(m.tamano)}
+        <div class="dueno">Publicado por ${escaparHtml(m.nombres_dueno)} ${escaparHtml(m.apellidos_dueno)} · ${escaparHtml(m.telefono)}</div>
+      </div>
+      <div class="acciones-fila"></div>
+    `;
+    return fila;
+  }
+
+  function filaPendiente(m){
+    const fila = filaBase(m);
+    const acciones = fila.querySelector('.acciones-fila');
+
+    const btnAprobar = document.createElement('button');
+    btnAprobar.className = 'btn-accion btn-aprobar';
+    btnAprobar.textContent = 'Aprobar';
+    btnAprobar.addEventListener('click', async () => {
+      btnAprobar.disabled = true; btnAprobar.textContent = 'Aprobando...';
+      const { error } = await supabase.from('mascotas').update({ estado: 'Disponible' }).eq('id', m.id);
+      if(error){ alert('No se pudo aprobar: ' + error.message); btnAprobar.disabled = false; btnAprobar.textContent = 'Aprobar'; return; }
+      cargarTodo();
+    });
+
+    const btnRechazar = document.createElement('button');
+    btnRechazar.className = 'btn-accion btn-eliminar';
+    btnRechazar.textContent = 'Rechazar y eliminar';
+    btnRechazar.addEventListener('click', () => eliminarMascota(m.id, btnRechazar));
+
+    acciones.append(btnAprobar, btnRechazar);
+    return fila;
+  }
+
+  function filaPublicada(m){
+    const fila = filaBase(m);
+    const acciones = fila.querySelector('.acciones-fila');
+
+    const btnAdoptado = document.createElement('button');
+    btnAdoptado.className = 'btn-accion btn-adoptado';
+    btnAdoptado.textContent = 'Marcar como adoptado';
+    btnAdoptado.addEventListener('click', async () => {
+      btnAdoptado.disabled = true; btnAdoptado.textContent = 'Guardando...';
+      const { error } = await supabase.from('mascotas').update({ estado: 'Adoptado' }).eq('id', m.id);
+      if(error){ alert('No se pudo actualizar: ' + error.message); btnAdoptado.disabled = false; btnAdoptado.textContent = 'Marcar como adoptado'; return; }
+      cargarTodo();
+    });
+
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btn-accion btn-eliminar';
+    btnEliminar.textContent = 'Eliminar';
+    btnEliminar.addEventListener('click', () => eliminarMascota(m.id, btnEliminar));
+
+    acciones.append(btnAdoptado, btnEliminar);
+    return fila;
+  }
+
+  async function eliminarMascota(id, boton){
+    if(!confirm('¿Seguro que quieres eliminar esta publicación? Esta acción no se puede deshacer.')) return;
+    boton.disabled = true; boton.textContent = 'Eliminando...';
+    const { error } = await supabase.from('mascotas').delete().eq('id', id);
+    if(error){ alert('No se pudo eliminar: ' + error.message); boton.disabled = false; boton.textContent = 'Eliminar'; return; }
+    cargarTodo();
+  }
+
+  function escaparHtml(texto){
+    const div = document.createElement('div');
+    div.textContent = texto ?? '';
+    return div.innerHTML;
+  }
+</script>
+
+</body>
+</html>
