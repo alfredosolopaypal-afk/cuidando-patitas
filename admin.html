@@ -295,6 +295,7 @@
       <div class="info-fila">
         <strong>${escaparHtml(nombreMostrado)}</strong> — ${escaparHtml(tipoMostrado)}, ${escaparHtml(m.raza)}, ${escaparHtml(edadTexto)}, ${escaparHtml(m.sexo)}, ${escaparHtml(m.tamano)}${m.esterilizado ? ', esterilizado' : ''}${m.vacunado ? ', vacunado' : ''}${m.desparasitado ? ', desparasitado' : ''}
         <div class="dueno">Publicado por ${escaparHtml(m.nombres_dueno)} ${escaparHtml(m.apellidos_dueno)} · ${escaparHtml(m.telefono)}</div>
+        ${m.descripcion ? `<div class="dueno" style="margin-top:4px; font-style:italic;">"${escaparHtml(m.descripcion.length > 120 ? m.descripcion.slice(0,120) + '…' : m.descripcion)}"</div>` : ''}
       </div>
       <div class="acciones-fila"></div>
     `;
