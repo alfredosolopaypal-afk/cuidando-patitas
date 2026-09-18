@@ -72,6 +72,15 @@
   .btn-eliminar:hover{ background:var(--danger); color:#fff; }
 
   .estado-vacio{ color:var(--text-soft); font-size:14px; padding: 20px; text-align:center; background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius-md); }
+
+  .form-donaciones{ background:var(--surface); border:1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; max-width: 480px; }
+  .form-donaciones .grupo{ margin-bottom: 20px; }
+  .form-donaciones .grupo h3{ font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .form-donaciones label{ font-size: 13.5px; margin-top: 10px; }
+  .form-donaciones input{ width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14.5px; font-family: inherit; margin-top: 4px; }
+  .form-donaciones input:focus{ outline: none; border-color: var(--primary); }
+  .mensaje-guardado{ color: var(--primary-dark); font-size: 13.5px; margin-top: 10px; display:none; }
+  .mensaje-guardado.visible{ display:block; }
 </style>
 </head>
 <body>
@@ -110,6 +119,35 @@
       <h2>Publicadas <span class="contador" id="contador-publicadas">0</span></h2>
       <p>Mascotas visibles actualmente para el público.</p>
       <div class="lista-admin" id="lista-publicadas"></div>
+    </section>
+
+    <section class="seccion-admin">
+      <h2>Datos de donación</h2>
+      <p>Esta información es la que ven las personas cuando hacen clic en "Donar" en la página principal.</p>
+      <form class="form-donaciones" id="form-donaciones">
+        <div class="grupo">
+          <h3>Pago Móvil</h3>
+          <label for="pago_movil_banco">Banco</label>
+          <input type="text" id="pago_movil_banco">
+          <label for="pago_movil_cedula">Cédula / RIF</label>
+          <input type="text" id="pago_movil_cedula">
+          <label for="pago_movil_telefono">Teléfono</label>
+          <input type="text" id="pago_movil_telefono">
+        </div>
+        <div class="grupo">
+          <h3>Binance</h3>
+          <label for="binance_id">Binance Pay ID</label>
+          <input type="text" id="binance_id">
+          <label for="binance_correo">Correo (opcional)</label>
+          <input type="text" id="binance_correo">
+          <label for="wallet_direccion">Dirección de wallet (opcional)</label>
+          <input type="text" id="wallet_direccion">
+          <label for="wallet_red">Red (ej. USDT TRC20) (opcional)</label>
+          <input type="text" id="wallet_red">
+        </div>
+        <button type="submit" class="btn-primario" id="btn-guardar-donaciones">Guardar cambios</button>
+        <div class="mensaje-guardado" id="mensaje-guardado-donaciones">Cambios guardados ✓</div>
+      </form>
     </section>
 
   </div>
@@ -176,8 +214,48 @@
 
   // ---------- Cargar datos ----------
   async function cargarTodo(){
-    await Promise.all([cargarPendientes(), cargarPublicadas()]);
+    await Promise.all([cargarPendientes(), cargarPublicadas(), cargarConfiguracionDonaciones()]);
   }
+
+  async function cargarConfiguracionDonaciones(){
+    const { data, error } = await supabase.from('configuracion_donaciones').select('*').eq('id', 1).maybeSingle();
+    if(error || !data) return;
+
+    const campos = ['pago_movil_banco','pago_movil_cedula','pago_movil_telefono','binance_id','binance_correo','wallet_direccion','wallet_red'];
+    campos.forEach(campo => {
+      const input = document.getElementById(campo);
+      if(input) input.value = data[campo] || '';
+    });
+  }
+
+  document.getElementById('form-donaciones').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btnGuardar = document.getElementById('btn-guardar-donaciones');
+    const mensaje = document.getElementById('mensaje-guardado-donaciones');
+    mensaje.classList.remove('visible');
+
+    btnGuardar.disabled = true;
+    btnGuardar.textContent = 'Guardando...';
+
+    const campos = ['pago_movil_banco','pago_movil_cedula','pago_movil_telefono','binance_id','binance_correo','wallet_direccion','wallet_red'];
+    const actualizacion = {};
+    campos.forEach(campo => {
+      actualizacion[campo] = document.getElementById(campo).value.trim() || null;
+    });
+
+    const { error } = await supabase.from('configuracion_donaciones').update(actualizacion).eq('id', 1);
+
+    btnGuardar.disabled = false;
+    btnGuardar.textContent = 'Guardar cambios';
+
+    if(error){
+      alert('No se pudo guardar: ' + error.message);
+      return;
+    }
+
+    mensaje.classList.add('visible');
+    setTimeout(() => mensaje.classList.remove('visible'), 2500);
+  });
 
   async function cargarPendientes(){
     const contenedor = document.getElementById('lista-pendientes');
@@ -215,7 +293,7 @@
     fila.innerHTML = `
       ${m.foto_url ? `<img class="foto-mini" src="${escaparHtml(m.foto_url)}" alt="">` : '<div class="foto-mini vacia">Sin foto</div>'}
       <div class="info-fila">
-        <strong>${escaparHtml(nombreMostrado)}</strong> — ${escaparHtml(tipoMostrado)}, ${escaparHtml(m.raza)}, ${escaparHtml(edadTexto)}, ${escaparHtml(m.sexo)}, ${escaparHtml(m.tamano)}
+        <strong>${escaparHtml(nombreMostrado)}</strong> — ${escaparHtml(tipoMostrado)}, ${escaparHtml(m.raza)}, ${escaparHtml(edadTexto)}, ${escaparHtml(m.sexo)}, ${escaparHtml(m.tamano)}${m.esterilizado ? ', esterilizado' : ''}${m.vacunado ? ', vacunado' : ''}${m.desparasitado ? ', desparasitado' : ''}
         <div class="dueno">Publicado por ${escaparHtml(m.nombres_dueno)} ${escaparHtml(m.apellidos_dueno)} · ${escaparHtml(m.telefono)}</div>
       </div>
       <div class="acciones-fila"></div>
