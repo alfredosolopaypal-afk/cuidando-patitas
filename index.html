@@ -52,6 +52,56 @@
   }
   .enlace-admin:hover{ border-color: var(--primary); color: var(--primary-dark); }
 
+  .btn-donar-header{
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  .btn-donar-header:hover{ background: var(--accent-dark); }
+
+  .overlay-modal{
+    display:none;
+    position: fixed;
+    inset: 0;
+    background: rgba(43,36,30,0.5);
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .overlay-modal.visible{ display:flex; }
+
+  .modal-donar{
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal-donar h2{ font-size: 24px; color: var(--primary-dark); margin: 0 0 6px; }
+  .modal-donar .subt{ color: var(--text-soft); font-size: 14.5px; margin: 0 0 24px; }
+
+  .bloque-metodo{ margin-bottom: 22px; }
+  .bloque-metodo h3{ font-size: 14px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  .campo-dato{ display:flex; align-items:center; justify-content:space-between; gap: 10px; padding: 8px 0; }
+  .campo-dato .etiqueta{ font-size: 12.5px; color: var(--text-soft); }
+  .campo-dato .valor{ font-size: 15px; font-weight: 600; }
+  .btn-copiar{ background: var(--primary-soft); color: var(--primary-dark); border:none; padding: 6px 12px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700; cursor:pointer; white-space:nowrap; }
+  .btn-copiar:hover{ background: var(--primary); color:#fff; }
+
+  .btn-cerrar-modal{ width:100%; margin-top: 8px; background: var(--bg); border: 1.5px solid var(--border); padding: 12px; border-radius: var(--radius-sm); font-weight: 700; cursor:pointer; }
+  .btn-cerrar-modal:hover{ border-color: var(--primary); }
+
   main{ padding: 48px 0 80px; min-height: 60vh; }
   .vista.oculta{ display:none; }
 
@@ -185,8 +235,20 @@
       <span class="brand-tagline">Adopción responsable de mascotas</span>
     </div>
    <!-- <a class="enlace-admin" href="admin.html">Admin</a> -->
+    <button class="btn-donar-header" onclick="abrirModalDonar()">🐾 Donar</button>
   </div>
 </header>
+
+<div class="overlay-modal" id="overlay-donar">
+  <div class="modal-donar">
+    <h2>Apoya esta causa</h2>
+    <p class="subt">Tu donación ayuda a cubrir alimento, veterinario y cuidados de las mascotas en adopción.</p>
+    <div id="contenido-donar">
+      <div class="estado-cargando">Cargando...</div>
+    </div>
+    <button class="btn-cerrar-modal" onclick="cerrarModalDonar()">Cerrar</button>
+  </div>
+</div>
 
 <main class="contenedor">
 
@@ -628,6 +690,80 @@
     const div = document.createElement('div');
     div.textContent = texto ?? '';
     return div.innerHTML;
+  }
+
+  // ---------- Modal de donaciones ----------
+  window.abrirModalDonar = async function(){
+    const overlay = document.getElementById('overlay-donar');
+    overlay.classList.add('visible');
+
+    const contenido = document.getElementById('contenido-donar');
+    contenido.innerHTML = '<div class="estado-cargando">Cargando...</div>';
+
+    const { data, error } = await supabase.from('configuracion_donaciones').select('*').eq('id', 1).maybeSingle();
+
+    if(error || !data){
+      contenido.innerHTML = '<div class="estado-vacio">No se pudo cargar la información de donaciones.</div>';
+      return;
+    }
+
+    let html = '';
+
+    if(data.pago_movil_banco || data.pago_movil_cedula || data.pago_movil_telefono){
+      html += `
+        <div class="bloque-metodo">
+          <h3>Pago Móvil</h3>
+          ${filaDato('Banco', data.pago_movil_banco)}
+          ${filaDato('Cédula / RIF', data.pago_movil_cedula)}
+          ${filaDato('Teléfono', data.pago_movil_telefono)}
+        </div>
+      `;
+    }
+
+    if(data.binance_id || data.binance_correo || data.wallet_direccion){
+      html += `
+        <div class="bloque-metodo">
+          <h3>Binance</h3>
+          ${filaDato('Binance Pay ID', data.binance_id)}
+          ${filaDato('Correo', data.binance_correo)}
+          ${filaDato('Wallet', data.wallet_direccion)}
+          ${filaDato('Red', data.wallet_red)}
+        </div>
+      `;
+    }
+
+    if(!html){
+      html = '<div class="estado-vacio">Todavía no se han configurado los datos de donación.</div>';
+    }
+
+    contenido.innerHTML = html;
+    contenido.querySelectorAll('.btn-copiar').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try{
+          await navigator.clipboard.writeText(btn.dataset.valor);
+          mostrarToast('Copiado: ' + btn.dataset.valor);
+        }catch(err){
+          mostrarToast('No se pudo copiar.');
+        }
+      });
+    });
+  };
+
+  window.cerrarModalDonar = function(){
+    document.getElementById('overlay-donar').classList.remove('visible');
+  };
+
+  function filaDato(etiqueta, valor){
+    if(!valor) return '';
+    return `
+      <div class="campo-dato">
+        <div>
+          <div class="etiqueta">${escaparHtml(etiqueta)}</div>
+          <div class="valor">${escaparHtml(valor)}</div>
+        </div>
+        <button type="button" class="btn-copiar" data-valor="${escaparHtml(valor)}">Copiar</button>
+      </div>
+    `;
   }
 
   // Si la página se abre con ?mascota=id (por ejemplo, desde un enlace compartido), mostramos esa mascota directamente
