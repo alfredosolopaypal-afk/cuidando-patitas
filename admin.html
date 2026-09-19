@@ -122,6 +122,12 @@
     </section>
 
     <section class="seccion-admin">
+      <h2>Adoptadas <span class="contador" id="contador-adoptadas">0</span></h2>
+      <p>Historial de mascotas ya adoptadas. Puedes revertir si se marcó por error.</p>
+      <div class="lista-admin" id="lista-adoptadas"></div>
+    </section>
+
+    <section class="seccion-admin">
       <h2>Datos de donación</h2>
       <p>Esta información es la que ven las personas cuando hacen clic en "Donar" en la página principal.</p>
       <form class="form-donaciones" id="form-donaciones">
@@ -219,7 +225,7 @@
 
   // ---------- Cargar datos ----------
   async function cargarTodo(){
-    await Promise.all([cargarPendientes(), cargarPublicadas(), cargarConfiguracionDonaciones()]);
+    await Promise.all([cargarPendientes(), cargarPublicadas(), cargarAdoptadas(), cargarConfiguracionDonaciones()]);
   }
 
   async function cargarConfiguracionDonaciones(){
@@ -331,7 +337,43 @@
     return fila;
   }
 
-  function filaPublicada(m){
+  async function cargarAdoptadas(){
+    const contenedor = document.getElementById('lista-adoptadas');
+    const { data, error } = await supabase.from('mascotas').select('*').eq('estado', 'Adoptado').order('creado_en', { ascending: false });
+
+    document.getElementById('contador-adoptadas').textContent = data ? data.length : 0;
+
+    if(error){ contenedor.innerHTML = `<div class="estado-vacio">Error: ${escaparHtml(error.message)}</div>`; return; }
+    if(!data || data.length === 0){ contenedor.innerHTML = '<div class="estado-vacio">Todavía no hay mascotas marcadas como adoptadas.</div>'; return; }
+
+    contenedor.innerHTML = '';
+    data.forEach(m => contenedor.appendChild(filaAdoptada(m)));
+  }
+
+  function filaAdoptada(m){
+    const fila = filaBase(m);
+    const acciones = fila.querySelector('.acciones-fila');
+
+    const btnRevertir = document.createElement('button');
+    btnRevertir.className = 'btn-accion btn-aprobar';
+    btnRevertir.textContent = 'Volver a publicar';
+    btnRevertir.addEventListener('click', async () => {
+      btnRevertir.disabled = true; btnRevertir.textContent = 'Guardando...';
+      const { error } = await supabase.from('mascotas').update({ estado: 'Disponible' }).eq('id', m.id);
+      if(error){ alert('No se pudo actualizar: ' + error.message); btnRevertir.disabled = false; btnRevertir.textContent = 'Volver a publicar'; return; }
+      cargarTodo();
+    });
+
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btn-accion btn-eliminar';
+    btnEliminar.textContent = 'Eliminar';
+    btnEliminar.addEventListener('click', () => eliminarMascota(m.id, btnEliminar));
+
+    acciones.append(btnRevertir, btnEliminar);
+    return fila;
+  }
+
+
     const fila = filaBase(m);
     const acciones = fila.querySelector('.acciones-fila');
 
