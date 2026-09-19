@@ -126,6 +126,11 @@
       <p>Esta información es la que ven las personas cuando hacen clic en "Donar" en la página principal.</p>
       <form class="form-donaciones" id="form-donaciones">
         <div class="grupo">
+          <h3>PayPal</h3>
+          <label for="paypal_link">Enlace de PayPal.Me</label>
+          <input type="text" id="paypal_link" placeholder="paypal.me/tunombre">
+        </div>
+        <div class="grupo">
           <h3>Pago Móvil</h3>
           <label for="pago_movil_banco">Banco</label>
           <input type="text" id="pago_movil_banco">
@@ -221,7 +226,7 @@
     const { data, error } = await supabase.from('configuracion_donaciones').select('*').eq('id', 1).maybeSingle();
     if(error || !data) return;
 
-    const campos = ['pago_movil_banco','pago_movil_cedula','pago_movil_telefono','binance_id','binance_correo','wallet_direccion','wallet_red'];
+    const campos = ['paypal_link','pago_movil_banco','pago_movil_cedula','pago_movil_telefono','binance_id','binance_correo','wallet_direccion','wallet_red'];
     campos.forEach(campo => {
       const input = document.getElementById(campo);
       if(input) input.value = data[campo] || '';
@@ -237,7 +242,7 @@
     btnGuardar.disabled = true;
     btnGuardar.textContent = 'Guardando...';
 
-    const campos = ['pago_movil_banco','pago_movil_cedula','pago_movil_telefono','binance_id','binance_correo','wallet_direccion','wallet_red'];
+    const campos = ['paypal_link','pago_movil_banco','pago_movil_cedula','pago_movil_telefono','binance_id','binance_correo','wallet_direccion','wallet_red'];
     const actualizacion = {};
     campos.forEach(campo => {
       actualizacion[campo] = document.getElementById(campo).value.trim() || null;
