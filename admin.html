@@ -46,6 +46,11 @@
   .oculto{ display:none; }
   .seccion-admin{ margin-bottom: 44px; }
   .seccion-admin h2{ font-size:20px; color:var(--primary-dark); margin:0 0 4px; display:flex; align-items:center; gap:8px; }
+
+  .pastillas{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 28px; }
+  .pastilla{ padding: 10px 18px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; cursor:pointer; transition: all .12s ease; display:flex; align-items:center; gap:8px; }
+  .pastilla:hover{ border-color: var(--primary); }
+  .pastilla.activa{ background: var(--primary); border-color: var(--primary); color: #fff; }
   .contador{ background:var(--accent); color:#fff; font-size:12px; font-weight:700; border-radius:999px; padding:2px 9px; }
   .seccion-admin > p{ color:var(--text-soft); font-size:13.5px; margin:0 0 18px; }
 
@@ -109,26 +114,29 @@
 
   <div id="dashboard" class="oculto">
 
-    <section class="seccion-admin">
-      <h2>Pendientes de aprobar <span class="contador" id="contador-pendientes">0</span></h2>
+    <div class="pastillas tabs-admin" id="tabs-admin">
+      <button type="button" class="pastilla activa" data-tab="pendientes">Pendientes de aprobar <span class="contador" id="contador-pendientes">0</span></button>
+      <button type="button" class="pastilla" data-tab="publicadas">Publicadas <span class="contador" id="contador-publicadas">0</span></button>
+      <button type="button" class="pastilla" data-tab="adoptadas">Adoptadas <span class="contador" id="contador-adoptadas">0</span></button>
+      <button type="button" class="pastilla" data-tab="donaciones">Datos de donación</button>
+    </div>
+
+    <section class="seccion-admin tab-admin" data-tab-contenido="pendientes">
       <p>Estas publicaciones todavía no son visibles en "Quiero adoptar".</p>
       <div class="lista-admin" id="lista-pendientes"></div>
     </section>
 
-    <section class="seccion-admin">
-      <h2>Publicadas <span class="contador" id="contador-publicadas">0</span></h2>
+    <section class="seccion-admin tab-admin oculto" data-tab-contenido="publicadas">
       <p>Mascotas visibles actualmente para el público.</p>
       <div class="lista-admin" id="lista-publicadas"></div>
     </section>
 
-    <section class="seccion-admin">
-      <h2>Adoptadas <span class="contador" id="contador-adoptadas">0</span></h2>
+    <section class="seccion-admin tab-admin oculto" data-tab-contenido="adoptadas">
       <p>Historial de mascotas ya adoptadas. Puedes revertir si se marcó por error.</p>
       <div class="lista-admin" id="lista-adoptadas"></div>
     </section>
 
-    <section class="seccion-admin">
-      <h2>Datos de donación</h2>
+    <section class="seccion-admin tab-admin oculto" data-tab-contenido="donaciones">
       <p>Esta información es la que ven las personas cuando hacen clic en "Donar" en la página principal.</p>
       <form class="form-donaciones" id="form-donaciones">
         <div class="grupo">
@@ -222,6 +230,19 @@
   });
 
   btnSalir.addEventListener('click', async () => { await supabase.auth.signOut(); });
+
+  // ---------- Navegación por pestañas ----------
+  function mostrarTabAdmin(nombre){
+    document.querySelectorAll('.tab-admin').forEach(sec => sec.classList.add('oculto'));
+    document.querySelector(`.tab-admin[data-tab-contenido="${nombre}"]`).classList.remove('oculto');
+    document.querySelectorAll('#tabs-admin .pastilla').forEach(btn => {
+      btn.classList.toggle('activa', btn.dataset.tab === nombre);
+    });
+  }
+
+  document.querySelectorAll('#tabs-admin .pastilla').forEach(btn => {
+    btn.addEventListener('click', () => mostrarTabAdmin(btn.dataset.tab));
+  });
 
   // ---------- Cargar datos ----------
   async function cargarTodo(){
