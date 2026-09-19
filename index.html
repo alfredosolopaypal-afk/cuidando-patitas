@@ -102,6 +102,20 @@
   .btn-cerrar-modal{ width:100%; margin-top: 8px; background: var(--bg); border: 1.5px solid var(--border); padding: 12px; border-radius: var(--radius-sm); font-weight: 700; cursor:pointer; }
   .btn-cerrar-modal:hover{ border-color: var(--primary); }
 
+  .btn-paypal{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    background:#0070BA;
+    color:#fff;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 14.5px;
+    margin-bottom: 8px;
+  }
+  .btn-paypal:hover{ background:#005ea6; }
+
   main{ padding: 48px 0 80px; min-height: 60vh; }
   .vista.oculta{ display:none; }
 
@@ -248,8 +262,8 @@
       <span class="brand-name">Cuidando patitas</span>
       <span class="brand-tagline">Adopción responsable de mascotas</span>
     </div>
-    <!-- <a class="enlace-admin" href="admin.html">Admin</a> 
-    <button class="btn-donar-header" onclick="abrirModalDonar()">🐾 Donar</button> -->
+  <!--  <a class="enlace-admin" href="admin.html">Admin</a> -->
+    <button class="btn-donar-header" onclick="abrirModalDonar()">🐾 Donar</button>
   </div>
 </header>
 
@@ -768,6 +782,11 @@
     }
 
     let html = '';
+
+    if(data.paypal_link){
+      const enlacePaypal = data.paypal_link.startsWith('http') ? data.paypal_link : `https://${data.paypal_link}`;
+      html += `<a class="btn-paypal" href="${escaparHtml(enlacePaypal)}" target="_blank" rel="noopener noreferrer">💙 Donar con PayPal</a>`;
+    }
 
     if(data.pago_movil_banco || data.pago_movil_cedula || data.pago_movil_telefono){
       html += `
