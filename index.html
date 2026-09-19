@@ -281,7 +281,7 @@
       <span class="brand-name">Cuidando patitas</span>
       <span class="brand-tagline">Adopción responsable de mascotas</span>
     </div>
- <!--   <a class="enlace-admin" href="admin.html">Admin</a> -->
+     <!-- <a class="enlace-admin" href="admin.html">Admin</a> -->
     <button class="btn-donar-header" onclick="abrirModalDonar()">🐾 Donar</button>
   </div>
 </header>
@@ -336,6 +336,42 @@
             <div class="fila">
               <div><label for="direccion">Dirección</label><input type="text" id="direccion" required></div>
               <div><label for="telefono">Número de teléfono</label><input type="tel" id="telefono" placeholder="Ej. 0414-1234567" required></div>
+            </div>
+            <div class="fila">
+              <div>
+                <label for="estado_ubicacion">Estado</label>
+                <select id="estado_ubicacion" required>
+                  <option value="">Selecciona un estado</option>
+                  <option>Amazonas</option>
+                  <option>Anzoátegui</option>
+                  <option>Apure</option>
+                  <option>Aragua</option>
+                  <option>Barinas</option>
+                  <option>Bolívar</option>
+                  <option>Carabobo</option>
+                  <option>Cojedes</option>
+                  <option>Delta Amacuro</option>
+                  <option>Distrito Capital</option>
+                  <option>Falcón</option>
+                  <option>Guárico</option>
+                  <option>La Guaira</option>
+                  <option>Lara</option>
+                  <option>Mérida</option>
+                  <option>Miranda</option>
+                  <option>Monagas</option>
+                  <option>Nueva Esparta</option>
+                  <option>Portuguesa</option>
+                  <option>Sucre</option>
+                  <option>Táchira</option>
+                  <option>Trujillo</option>
+                  <option>Yaracuy</option>
+                  <option>Zulia</option>
+                </select>
+              </div>
+              <div>
+                <label for="ciudad">Ciudad</label>
+                <input type="text" id="ciudad" placeholder="Ej. Coro" required>
+              </div>
             </div>
           </div>
 
@@ -457,6 +493,33 @@
         <button type="button" class="pastilla" data-valor="Otro">Otro</button>
       </div>
       <input type="text" id="filtro-raza" placeholder="Buscar por raza...">
+      <select id="filtro-estado">
+        <option value="">Cualquier estado</option>
+        <option>Amazonas</option>
+        <option>Anzoátegui</option>
+        <option>Apure</option>
+        <option>Aragua</option>
+        <option>Barinas</option>
+        <option>Bolívar</option>
+        <option>Carabobo</option>
+        <option>Cojedes</option>
+        <option>Delta Amacuro</option>
+        <option>Distrito Capital</option>
+        <option>Falcón</option>
+        <option>Guárico</option>
+        <option>La Guaira</option>
+        <option>Lara</option>
+        <option>Mérida</option>
+        <option>Miranda</option>
+        <option>Monagas</option>
+        <option>Nueva Esparta</option>
+        <option>Portuguesa</option>
+        <option>Sucre</option>
+        <option>Táchira</option>
+        <option>Trujillo</option>
+        <option>Yaracuy</option>
+        <option>Zulia</option>
+      </select>
       <select id="filtro-tamano">
         <option value="">Cualquier tamaño</option>
         <option value="Pequeño">Pequeño</option>
@@ -617,6 +680,8 @@
         apellidos_dueno: document.getElementById('apellidos_dueno').value.trim(),
         direccion: document.getElementById('direccion').value.trim(),
         telefono: document.getElementById('telefono').value.trim(),
+        estado_ubicacion: document.getElementById('estado_ubicacion').value,
+        ciudad: document.getElementById('ciudad').value.trim(),
         tipo_animal: tipoSeleccionado,
         tipo_otro: tipoSeleccionado === 'Otro' ? document.getElementById('tipo_otro').value.trim() : null,
         nombre_mascota: document.getElementById('nombre_mascota').value.trim() || null,
@@ -648,6 +713,7 @@
   });
 
   document.getElementById('filtro-raza').addEventListener('input', debounce(cargarMascotas, 350));
+  document.getElementById('filtro-estado').addEventListener('change', cargarMascotas);
   document.getElementById('filtro-tamano').addEventListener('change', cargarMascotas);
 
   function debounce(fn, espera){
@@ -663,6 +729,8 @@
     if(filtroTipoActivo){ consulta = consulta.eq('tipo_animal', filtroTipoActivo); }
     const raza = document.getElementById('filtro-raza').value.trim();
     if(raza){ consulta = consulta.ilike('raza', `%${raza}%`); }
+    const estadoUbicacion = document.getElementById('filtro-estado').value;
+    if(estadoUbicacion){ consulta = consulta.eq('estado_ubicacion', estadoUbicacion); }
     const tamano = document.getElementById('filtro-tamano').value;
     if(tamano){ consulta = consulta.eq('tamano', tamano); }
 
@@ -698,7 +766,7 @@
         </div>
         <div class="detalle-tarjeta">
           ${escaparHtml(m.raza)} · ${escaparHtml(edadTexto)} · ${escaparHtml(m.sexo)}${m.esterilizado ? ' · Esterilizado' : ''}${m.vacunado ? ' · Vacunado' : ''}${m.desparasitado ? ' · Desparasitado' : ''}<br>
-          Tamaño: ${escaparHtml(m.tamano)}
+          Tamaño: ${escaparHtml(m.tamano)}${(m.ciudad || m.estado_ubicacion) ? ` · 📍 ${escaparHtml(m.ciudad || '')}${m.ciudad && m.estado_ubicacion ? ', ' : ''}${escaparHtml(m.estado_ubicacion || '')}` : ''}
         </div>
         ${m.descripcion ? `<p class="descripcion-mascota">${escaparHtml(m.descripcion)}</p>` : ''}
         <div class="fila-botones-tarjeta">
