@@ -153,8 +153,16 @@
     font-weight: 700;
     padding: 8px 18px;
     border-radius: 999px;
-    margin-bottom: 28px;
+    margin-bottom: 12px;
   }
+
+  .historias-exito{ margin: 0 auto 28px; max-width: 640px; }
+  .historias-exito h2{ font-size: 15px; color: var(--text-soft); margin: 0 0 12px; font-weight: 700; text-align:left; }
+  .fila-historias{ display:flex; gap: 14px; overflow-x: auto; padding-bottom: 10px; }
+  .mini-tarjeta-adoptado{ flex: 0 0 88px; text-align:center; }
+  .mini-foto-adoptado{ width: 76px; height: 76px; border-radius: 50%; object-fit: cover; background: var(--bg); border: 2px solid var(--primary-soft); margin: 0 auto 6px; display:block; }
+  .mini-foto-adoptado.vacia{ display:flex; align-items:center; justify-content:center; font-size: 22px; }
+  .mini-nombre-adoptado{ font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
   .botones-hero{ display:flex; gap: 16px; justify-content:center; flex-wrap: wrap; }
 
   .btn-grande{ font-size: 17px; font-weight: 600; padding: 18px 32px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; min-width: 220px; }
@@ -281,7 +289,7 @@
       <span class="brand-name">Cuidando patitas</span>
       <span class="brand-tagline">Adopción responsable de mascotas</span>
     </div>
-     <!-- <a class="enlace-admin" href="admin.html">Admin</a> -->
+   <!-- <a class="enlace-admin" href="admin.html">Admin</a> -->
     <button class="btn-donar-header" onclick="abrirModalDonar()">🐾 Donar</button>
   </div>
 </header>
@@ -312,6 +320,10 @@
       <p>Conectamos a quienes buscan una mascota con quienes tienen una lista para dar en adopción.</p>
       <div class="contador-adoptados" id="contador-adoptados" style="display:none">
         🐾 <span id="numero-adoptados">0</span> mascotas ya encontraron un hogar
+      </div>
+      <div class="historias-exito" id="historias-exito" style="display:none">
+        <h2>Ya encontraron un hogar 🎉</h2>
+        <div class="fila-historias" id="fila-historias"></div>
       </div>
       <div class="botones-hero">
         <button class="btn-grande btn-primario" onclick="mostrarVista('listado')">Quiero adoptar</button>
@@ -954,6 +966,26 @@
     }
   }
   cargarContadorAdoptados();
+
+  async function cargarHistoriasExito(){
+    const { data, error } = await supabase.rpc('obtener_mascotas_adoptadas_publico');
+    if(error || !data || data.length === 0) return;
+
+    const contenedor = document.getElementById('fila-historias');
+    contenedor.innerHTML = '';
+    data.forEach(m => {
+      const nombreMostrado = m.nombre_mascota || 'Sin nombre';
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'mini-tarjeta-adoptado';
+      tarjeta.innerHTML = `
+        ${m.foto_url ? `<img class="mini-foto-adoptado" src="${escaparHtml(m.foto_url)}" alt="${escaparHtml(nombreMostrado)}">` : '<div class="mini-foto-adoptado vacia">🐾</div>'}
+        <div class="mini-nombre-adoptado">${escaparHtml(nombreMostrado)}</div>
+      `;
+      contenedor.appendChild(tarjeta);
+    });
+    document.getElementById('historias-exito').style.display = 'block';
+  }
+  cargarHistoriasExito();
 
   // Si la página se abre con ?mascota=id (por ejemplo, desde un enlace compartido), mostramos esa mascota directamente
   const parametros = new URLSearchParams(window.location.search);
