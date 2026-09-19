@@ -116,6 +116,25 @@
   }
   .btn-paypal:hover{ background:#005ea6; }
 
+  .btn-binance{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+    width: 100%;
+    text-align:center;
+    background:#F0B90B;
+    color:#1E2329;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 14.5px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .btn-binance:hover{ background:#d9a70a; }
+
   main{ padding: 48px 0 80px; min-height: 60vh; }
   .vista.oculta{ display:none; }
 
@@ -262,7 +281,7 @@
       <span class="brand-name">Cuidando patitas</span>
       <span class="brand-tagline">Adopción responsable de mascotas</span>
     </div>
-  <!--  <a class="enlace-admin" href="admin.html">Admin</a> -->
+ <!--   <a class="enlace-admin" href="admin.html">Admin</a> -->
     <button class="btn-donar-header" onclick="abrirModalDonar()">🐾 Donar</button>
   </div>
 </header>
@@ -803,7 +822,7 @@
       html += `
         <div class="bloque-metodo">
           <h3>Binance</h3>
-          ${filaDato('Binance Pay ID', data.binance_id)}
+          ${data.binance_id ? `<button type="button" class="btn-binance" id="btn-copiar-binance" data-valor="${escaparHtml(data.binance_id)}">🟡 Copiar Binance Pay ID</button>` : ''}
           ${filaDato('Correo', data.binance_correo)}
           ${filaDato('Wallet', data.wallet_direccion)}
           ${filaDato('Red', data.wallet_red)}
@@ -816,6 +835,19 @@
     }
 
     contenido.innerHTML = html;
+
+    const btnCopiarBinance = contenido.querySelector('#btn-copiar-binance');
+    if(btnCopiarBinance){
+      btnCopiarBinance.addEventListener('click', async () => {
+        try{
+          await navigator.clipboard.writeText(btnCopiarBinance.dataset.valor);
+          mostrarToast('Binance Pay ID copiado: ' + btnCopiarBinance.dataset.valor);
+        }catch(err){
+          mostrarToast('No se pudo copiar.');
+        }
+      });
+    }
+
     contenido.querySelectorAll('.btn-copiar').forEach(btn => {
       btn.addEventListener('click', async () => {
         try{
